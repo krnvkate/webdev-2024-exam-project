@@ -25,13 +25,6 @@ class RecipeAdmin(admin.ModelAdmin):
     raw_id_fields = ('author',)
 
 
-# @admin.register(Step)
-# class StepAdmin(admin.ModelAdmin):
-#     list_display = ('recipe', 'step_number')  # Показать рецепт и номер шага
-#     ordering = ('step_number',)  # Сортировка по номеру шага
-#     search_fields = ('recipe__title',)  # Поиск по названию рецепта
-
-
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('category_name',)  # Поиск по полям
