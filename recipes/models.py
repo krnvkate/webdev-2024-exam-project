@@ -50,7 +50,7 @@ class Recipe(models.Model):
 class RecIng(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name="Ингредиент")
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Количество")
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name="Количество")
     unit_choices = [
         ('л', 'Литр'),
         ('мл', 'Миллилитр'),
@@ -60,6 +60,7 @@ class RecIng(models.Model):
         ('шт', 'Штук'),
         ('гр', 'Грамм'),
         ('кг', 'Килограмм'),
+        ('вкус.', 'По вкусу'),
     ]
     unit = models.CharField(max_length=5, choices=unit_choices, verbose_name="Единица измерения")
 
