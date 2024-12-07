@@ -5,14 +5,25 @@ from recipes.models import Recipe
 class RecipeResource(ModelResource):
     class Meta:
         model = Recipe
-        fields = ('id', 'title', 'author', 'category', 'cook_time', 'rating', 'publish', 'status', 'notes')
+        fields = ('id', 'title', 'author', 'category', 'cook_time', 'rating', 'publish', 'status', 'ingredients')
 
-    def get_export_queryset(self, Recipe):
+    def get_export_queryset(self):
+        queryset = ModelResource.get_export_queryset(self)
         # Возвращаем только рецепты с рейтингом выше 4
-        return Recipe.get_export_queryset().filter(rating__gt=4)
+        return queryset.filter(rating__gt=Decimal('4.0'))
 
+    def dehydrate_author(self, recipe: Recipe) -> str:
+        # Возвращаем никнейм автора вместо ID
+        return str(recipe.author)
 
-    # # Преобразуйте список ингредиентов в строку,разделенную запятыми.
-    # def dehydrate_ingredients:
-    # # Преобразуйте поле category в формат "Кухня: {тип кухни}".
-    # def get_category_type:
+    def dehydrate_ingredients(self, recipe: Recipe) -> str:
+        # Преобразуем список ингредиентов в строку, разделённую запятыми
+        return ', '.join(str(ingredient) for ingredient in recipe.ingredients.all())
+
+    def get_category_type(self, recipe: Recipe) -> str:
+        # Преобразуем поле category в формат "Категория: {тип}"
+        return f"Категория: {recipe.category.category_name}" if recipe.category else "Категория: Не указана"
+
+    def dehydrate_category(self, recipe: Recipe) -> str:
+        # Используем get_category_type для форматирования значения категории
+        return self.get_category_type(recipe)

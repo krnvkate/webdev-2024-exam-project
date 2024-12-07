@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
 from recipes.models import Recipe
-from recipes.seriallizers.recipe import RecipeSerializer
+from recipes.serializers.recipe import RecipeSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action

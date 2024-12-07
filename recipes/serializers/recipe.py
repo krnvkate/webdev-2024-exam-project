@@ -12,7 +12,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients_count = serializers.SerializerMethodField()
     steps_count = serializers.SerializerMethodField()
     author = UserSerializer()
-    publish = serializers.DateTimeField(format='%d.%m.%Y')
+    publish = serializers.DateField(format='%d.%m.%Y')
 
     class Meta:
         model = Recipe

@@ -1,6 +1,6 @@
 from rest_framework import generics
 from recipes.models import Recipe
-from recipes.seriallizers.recipe import RecipeSerializer
+from recipes.serializers.recipe import RecipeSerializer
 
 class RecipeByCategoryView(generics.ListAPIView):
     serializer_class = RecipeSerializer
