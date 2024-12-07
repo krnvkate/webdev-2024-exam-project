@@ -3,6 +3,7 @@ from recipes.models import Recipe
 from recipes.seriallizers.recipe import RecipeSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 class RecipeViewSet(viewsets.ViewSet):
     def list (self, request):
@@ -36,3 +37,11 @@ class RecipeViewSet(viewsets.ViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         recipe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['post'], detail=True)
+    def add_note(self, request, pk=None):
+        recipe = self.get_object()
+        note = request.data.get('note', '')
+        recipe.notes = note
+        recipe.save()
+        return Response({'status': 'Note added'})

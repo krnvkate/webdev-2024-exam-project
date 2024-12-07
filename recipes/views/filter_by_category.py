@@ -12,3 +12,4 @@ class RecipeByCategoryView(generics.ListAPIView):
         # Фильтруем рецепты по категории
         return Recipe.objects.filter(category_id=category_id)
 
+

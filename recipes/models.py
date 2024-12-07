@@ -40,6 +40,7 @@ class Recipe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='recipes', verbose_name="Категория")
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.CHECK, verbose_name="Статус")
     ingredients = models.ManyToManyField(Ingredient, through="RecIng", verbose_name="Ингредиент")
+    notes = models.TextField(null=True, blank=True, verbose_name="Комментарий")
     def __str__(self):
         return self.title
     class Meta:

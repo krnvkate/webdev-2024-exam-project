@@ -1,6 +1,7 @@
 from django.contrib import admin
-
 from .models import Category, Ingredient, Recipe, RecIng, Step
+from import_export.admin import ImportExportActionModelAdmin
+from recipes.export import RecipeResource
 class RecIngInline(admin.TabularInline):
     model = RecIng
     extra = 1  # Число пустых форм, которые будут отображаться для добавления ингредиентов
@@ -16,13 +17,14 @@ class StepInline(admin.TabularInline):
     ordering = ('step_number',)  # Сортировать шаги по номеру шага.
 
 @admin.register(Recipe)
-class RecipeAdmin(admin.ModelAdmin):
+class RecipeAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     inlines = [RecIngInline, StepInline]  # Отображение ингредиентов и шагов внутри формы рецепта.
     list_display = ('title', 'category', 'author', 'rating', 'status')  # Поля для отображения в списке рецептов
     list_filter = ('status', 'category',)  # Фильтрация по статусу и категории
     date_hierarchy = 'publish'
     search_fields = ('title', 'author__username')  # Поиск по заголовку и автору
     raw_id_fields = ('author',)
+    resource_class = RecipeResource
 
 
 @admin.register(Category)

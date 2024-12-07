@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from recipes.views.filter_by_category import RecipeByCategoryView
 
 router = DefaultRouter()
-router.register(r'recipe-viewset', RecipeViewSet, basename='recipe-viewset')
+router.register(r'recipes', RecipeViewSet, basename='recipe-model')
 
 urlpatterns = [
     path('', include(router.urls)),
