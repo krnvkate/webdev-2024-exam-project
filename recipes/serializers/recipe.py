@@ -16,7 +16,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'author', 'category', 'cook_time', 'rating', 'publish', 'status', 'notes']
+        fields = ['id', 'title', 'author', 'category', 'ingredients', 'servings', 'cook_time', 'rating', 'publish', 'status', 'notes']
 
     # def get_ingredients_count(self, obj):
     #     return obj.ingredients.count()

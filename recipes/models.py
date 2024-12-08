@@ -33,7 +33,7 @@ class Recipe(models.Model):
     servings = models.PositiveIntegerField(verbose_name='Число порций')
     cook_time = models.DurationField(verbose_name='Время приготовления')
     rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Рейтинг')
-    main_photo = models.ImageField(upload_to='recipes/main_photos', verbose_name='Основное фото')
+    main_photo = models.ImageField(upload_to='recipes/main_photos', blank=True, verbose_name='Основное фото')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='recipes', verbose_name="Автор")
     calories = models.DecimalField(null=True, blank=True, max_digits=5, decimal_places=2, verbose_name="Калории на одну порцию")
     publish = models.DateField(default=timezone.now, verbose_name="Дата публикации")
