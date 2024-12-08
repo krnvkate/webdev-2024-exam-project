@@ -8,7 +8,6 @@ class RecipeByCategoryView(generics.ListAPIView):
     def get_queryset(self):
         # Извлекаем category из URL
         category_id = self.kwargs.get('category')
-
         # Фильтруем рецепты по категории
         return Recipe.objects.filter(category_id=category_id)
 

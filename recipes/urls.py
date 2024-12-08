@@ -7,7 +7,7 @@ router = DefaultRouter()
 router.register(r'recipes', RecipeViewSet, basename='recipe-model')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("api/", include(router.urls)),
     path('category/<int:category>/', RecipeByCategoryView.as_view(), name='recipe-category'),
 ]
 
