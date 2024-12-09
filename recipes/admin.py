@@ -1,7 +1,10 @@
 from django.contrib import admin
 from .models import Category, Ingredient, Recipe, RecIng, Step
 from import_export.admin import ImportExportActionModelAdmin
+from import_export.resources import ModelResource
 from recipes.export import RecipeResource
+
+
 class RecIngInline(admin.TabularInline):
     model = RecIng
     extra = 1  # Число пустых форм, которые будут отображаться для добавления ингредиентов
@@ -30,4 +33,3 @@ class RecipeAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('category_name',)  # Поиск по полям
-    #list_filter = ('category_name',)  # Фильтрация по имени категории

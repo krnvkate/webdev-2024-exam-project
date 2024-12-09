@@ -4,15 +4,20 @@ from recipes.views.recing_view_set import RecIngModelViewSet
 from rest_framework.routers import DefaultRouter
 from recipes.views.filter_by_category import RecipeByCategoryView
 from recipes.views.filter_by_cook_time import RecipeByCookTimeView
+from recipes.views.ingredient_view_set import IngredientModelViewSet
+from recipes.views.category_view_set import CategoryModelViewSet
+
 
 router = DefaultRouter()
 router.register(r'recipes', RecipeViewSet, basename='recipe-model')
 router.register(r'recing', RecIngModelViewSet, basename='recipe-inredients')
+router.register(r'ingredient', IngredientModelViewSet, basename='inredients')
+router.register(r'category', CategoryModelViewSet, basename='category')
+
 
 urlpatterns = [
     path('api/', include(router.urls)),
     path('category/<int:category>/', RecipeByCategoryView.as_view(), name='recipe-category'),
-    path('recipes/title/', RecipeByCookTimeView.as_view(), name='filtered-recipes'),
 ]
 
 

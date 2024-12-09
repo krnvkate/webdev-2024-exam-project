@@ -8,11 +8,16 @@ from rest_framework.decorators import action
 from django.db.models import Count
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.filter import RecipeFilter
 # class RecipeViewSet(viewsets.ViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['title']
+    filterset_class = RecipeFilter
     # def list (self, request):
     #     queryset = Recipe.objects.all()
     #     serializer = RecipeSerializer(queryset, many=True)
@@ -45,10 +50,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
     #     recipe.delete()
     #     return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['post'], detail=True)
-    def add_note(self, request, pk=None):
+    @action(methods=['get', 'post'], detail=True)
+    def add_note_good_food(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
-        note = request.data.get('notes', '')
+        note = 'Полезная еда'
+        recipe.notes = note
+        recipe.save()
+        return Response({'status': 'Note added'})
+
+    @action(methods=['get', 'post'], detail=True)
+    def add_note_bad_food(self, request, pk=None):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        note = 'Вредная еда'
         recipe.notes = note
         recipe.save()
         return Response({'status': 'Note added'})

@@ -8,9 +8,9 @@ class RecipeResource(ModelResource):
         fields = ('id', 'title', 'author', 'category', 'cook_time', 'rating', 'publish', 'status', 'ingredients')
 
     def get_export_queryset(self):
-        queryset = ModelResource.get_export_queryset(self)
+        queryset = super().get_export_queryset()
         # Возвращаем только рецепты с рейтингом выше 4
-        return queryset.filter(rating__gt=Decimal('4.0'))
+        return queryset.filter(rating=4.0)
 
     def dehydrate_author(self, recipe: Recipe) -> str:
         # Возвращаем никнейм автора вместо ID
