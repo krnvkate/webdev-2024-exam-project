@@ -11,14 +11,15 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.filter import RecipeFilter
+from recipes.filter import RecipeTitleFilter
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = ['title']
-    filterset_class = RecipeFilter
+    search_fields = ['notes']
+    filterset_class = RecipeTitleFilter
 
 
     @action(methods=['get', 'post'], detail=True)
