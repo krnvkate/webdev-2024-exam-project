@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Category, Ingredient, Recipe, RecIng, Step
 from import_export.admin import ImportExportActionModelAdmin
-from import_export.resources import ModelResource
 from recipes.export import RecipeResource
 
 
