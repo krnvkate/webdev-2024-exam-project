@@ -1,17 +1,18 @@
-from rest_framework import viewsets, status
-from recipes.models import Recipe
-from django.db.models import Q
-from accounts.models import FavoriteRecipe
-from recipes.serializers.recipe import RecipeSerializer
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import action
 from django.db.models import Count
-from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
+from rest_framework.response import Response
+
+from accounts.models import FavoriteRecipe
 from recipes.filter import RecipeFilter
+from recipes.models import Recipe
+from recipes.serializers.recipe import RecipeSerializer
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
@@ -20,7 +21,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['notes']
     filterset_class = RecipeFilter
-
 
     @action(methods=['get', 'post'], detail=True)
     def add_note_good_food(self, request, pk=None):
@@ -91,4 +91,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         serializer = RecipeSerializer(recipes, many=True)
         return Response(serializer.data)
-

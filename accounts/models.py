@@ -17,6 +17,7 @@ class Profile(models.Model):
     city = models.CharField(max_length=50, null=True, blank=True, verbose_name="Город")
     info = models.TextField(null=True, blank=True, verbose_name="О себе")
     history = HistoricalRecords()
+
     def __str__(self):
         return self.user.username
 
