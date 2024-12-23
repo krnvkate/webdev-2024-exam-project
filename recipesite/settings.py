@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'import_export',
     'simple_history',
     'django_filters',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
