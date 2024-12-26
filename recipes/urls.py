@@ -19,5 +19,3 @@ urlpatterns = [
     path('recipes/category/<int:category>/',
          RecipeByCategoryView.as_view(), name='recipe-category'),
 ]
-
-

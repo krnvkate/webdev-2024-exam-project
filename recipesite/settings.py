@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +46,9 @@ INSTALLED_APPS = [
     'simple_history',
     'django_filters',
     'drf_yasg',
+    'django_celery_beat',
+    'django_celery_results',
+    'mailhog',
 ]
 
 MIDDLEWARE = [
@@ -146,3 +150,26 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mailhog'
+EMAIL_PORT = 1025  # SMTP port of Mailhog
+EMAIL_USE_TLS = False
+
+CELERY_BROKER_URL = 'redis://redis:6379'  # Используем Redis как брокер задач
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_MODULES = ['recipes.tasks']
+
+CELERY_BEAT_SCHEDULE = {
+    'delete-unpopular-recipes': {
+        'task': 'recipes.tasks.delete_unpopular_recipes',  # Полный путь к задаче
+        'schedule': crontab(hour=22, minute=10),  # Каждый день в полночь
+    },
+    'notify-new-recipes-every-week': {
+        'task': 'recipes.tasks.notify_new_recipes',  # Убедитесь, что указали правильный путь к задаче
+        'schedule': crontab(day_of_week='thursday', hour=22, minute=5),  # Каждую неделю в понедельник в 10:00
+    },
+}

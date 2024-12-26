@@ -59,7 +59,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         # Проверяем, существует ли уже запись о любимом рецепте для этого пользователя
         if FavoriteRecipe.objects.filter(user=request.user, recipe=recipe).exists():
-            return Response({'detail': 'Рецепт уже в ваших избранных.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Рецепт уже в ваших избранных.'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         # Создаем запись о любимом рецепте
         favorite_recipe = FavoriteRecipe(user=request.user, recipe=recipe, fav_date=timezone.now())

@@ -14,5 +14,3 @@ class RecipeByCategoryView(generics.ListAPIView):
         category_id = self.kwargs.get('category')
         # Фильтруем рецепты по категории
         return Recipe.objects.filter(category_id=category_id)
-
-

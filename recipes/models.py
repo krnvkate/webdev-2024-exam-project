@@ -34,6 +34,7 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Модель для описания рецепта"""
     class Status(models.TextChoices):
+        """Возможные варианты статуса"""
         DRAFT = 'DT', 'Удалён'
         CHECK = 'CK', 'На рассмотрении'
         PUBLISHED = 'PB', 'Опубликован'
@@ -109,7 +110,8 @@ class Step(models.Model):
                                related_name='steps',verbose_name="Рецепт")
     step_number = models.PositiveIntegerField(verbose_name="Номер шага")
     description = models.TextField(verbose_name="Описание шага")
-    photo = models.ImageField(upload_to='recipes/steps/', blank=True, null=True, verbose_name="Фото к шагу")
+    photo = models.ImageField(upload_to='recipes/steps/', blank=True, null=True,
+                              verbose_name="Фото к шагу")
     history = HistoricalRecords()
 
     def __str__(self):
@@ -117,6 +119,6 @@ class Step(models.Model):
 
     class Meta:
         ordering = ['step_number']  # Сортировка по номеру шага (по возрастанию)
-        unique_together = ('recipe', 'step_number')  # Уникальность номера шага в рамках одного рецепта
+        unique_together = ('recipe', 'step_number')  # Уникальность номера в рамках одного рецепта
         verbose_name = "Шаг"
         verbose_name_plural = "Шаги"

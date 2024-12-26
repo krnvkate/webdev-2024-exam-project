@@ -7,7 +7,32 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+      - celery
+      - mailhog
 
   redis:
+  # Создание контейнера из готового образа
     image: redis:alpine
-    hostname: redis
+
+  celery:
+    build: .
+    command: celery -A recipesite worker -l info
+    depends_on:
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=recipesite.settings
+
+  celery-beat:
+    build: .
+    command: celery -A recipesite beat -l info
+    depends_on:
+      - redis
+      - web
+    environment:
+      - DJANGO_SETTINGS_MODULE=recipesite.settings
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web interface port
