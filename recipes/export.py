@@ -3,9 +3,12 @@ from recipes.models import Recipe
 
 
 class RecipeResource(ModelResource):
+    """Экспорт данных из админки в excel"""
     class Meta:
+        """Данные, доступные для экспорта"""
         model = Recipe
-        fields = ('id', 'title', 'author', 'category', 'cook_time', 'rating', 'publish', 'status', 'ingredients')
+        fields = ('id', 'title', 'author', 'category', 'cook_time',
+                  'rating', 'publish', 'status', 'ingredients')
 
     def get_export_queryset(self, request):
         """Получаем базовый queryset из ModelAdmin"""
@@ -22,7 +25,8 @@ class RecipeResource(ModelResource):
 
     def get_category_type(self, recipe: Recipe) -> str:
         """Преобразуем поле category в формат "Категория: {тип}" """
-        return f"Категория: {recipe.category.category_name}" if recipe.category else "Категория: Не указана"
+        return f"Категория: {recipe.category.category_name}" \
+            if recipe.category else "Категория: Не указана"
 
     def dehydrate_category(self, recipe: Recipe) -> str:
         """Используем get_category_type для форматирования значения категории"""

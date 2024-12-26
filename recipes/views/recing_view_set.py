@@ -1,7 +1,8 @@
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
+
 from recipes.models import RecIng
 from recipes.serializers.recing import RecIngSerializer
-from rest_framework.filters import SearchFilter
 
 
 class RecIngModelViewSet(viewsets.ModelViewSet):
