@@ -1,3 +1,4 @@
+"""Настройка админки для приложения accounts"""
 from django.contrib import admin
 
 from .models import Profile, FavoriteRecipe

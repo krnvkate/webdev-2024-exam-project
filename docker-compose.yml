@@ -9,10 +9,15 @@ services:
       - redis
       - celery
       - mailhog
+    environment:
+      - RUNNING_IN_DOCKER=True
+      - REDIS_HOST=redis
 
   redis:
   # Создание контейнера из готового образа
     image: redis:alpine
+    ports:
+      - "6379:6379"
 
   celery:
     build: .
@@ -21,6 +26,10 @@ services:
       - redis
     environment:
       - DJANGO_SETTINGS_MODULE=recipesite.settings
+      - RUNNING_IN_DOCKER=True
+      - REDIS_HOST=redis
+    volumes:
+      - ./:/app
 
   celery-beat:
     build: .
@@ -30,6 +39,10 @@ services:
       - web
     environment:
       - DJANGO_SETTINGS_MODULE=recipesite.settings
+      - RUNNING_IN_DOCKER=True
+      - REDIS_HOST=redis
+    volumes:
+      - ./:/app
 
   mailhog:
     image: mailhog/mailhog:latest

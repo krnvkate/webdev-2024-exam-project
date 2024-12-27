@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -18,10 +19,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюшка CRUD для модели Рецепт"""
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['notes']
     filterset_class = RecipeFilter
+
+    def get_recipe(self, recipe_id):
+        cache_key = f"recipe_{recipe_id}"
+        recipe = cache.get(cache_key)
+
+        if recipe is None:
+            print("Cache miss - getting from database")
+            recipe = get_object_or_404(Recipe, pk=recipe_id)
+            cache.set(cache_key, recipe, timeout=60 * 15)
+        else:
+            print("Cache hit - getting from Redis")
+
+        return recipe
 
     @action(methods=['get', 'post'], detail=True)
     def add_note_good_food(self, request, pk=None):

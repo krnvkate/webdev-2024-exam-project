@@ -156,20 +156,39 @@ EMAIL_HOST = 'mailhog'
 EMAIL_PORT = 1025  # SMTP port of Mailhog
 EMAIL_USE_TLS = False
 
-CELERY_BROKER_URL = 'redis://redis:6379'  # Используем Redis как брокер задач
-CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_BEAT_SCHEDULE = {
+    'delete-unpopular-recipes': {
+        'task': 'recipes.tasks.delete_unpopular_recipes',  # Полный путь к задаче
+        'schedule': crontab(hour=0, minute=0),  # Каждый день в полночь
+    },
+    'notify-new-recipes-every-week': {
+        'task': 'recipes.tasks.notify_new_recipes',
+        'schedule': crontab(day_of_week='monday', hour=10, minute=00),  # Каждую неделю в понедельник в 10:00
+    },
+}
+
+# Определяем, запущено ли приложение в Docker
+RUNNING_IN_DOCKER = os.environ.get('RUNNING_IN_DOCKER', False)
+
+# Получаем хост Redis из переменных окружения или используем значение по умолчанию
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+REDIS_URL = f'redis://{REDIS_HOST}:6379'
+
+# Настройки Celery
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_MODULES = ['recipes.tasks']
 
-CELERY_BEAT_SCHEDULE = {
-    'delete-unpopular-recipes': {
-        'task': 'recipes.tasks.delete_unpopular_recipes',  # Полный путь к задаче
-        'schedule': crontab(hour=22, minute=10),  # Каждый день в полночь
-    },
-    'notify-new-recipes-every-week': {
-        'task': 'recipes.tasks.notify_new_recipes',  # Убедитесь, что указали правильный путь к задаче
-        'schedule': crontab(day_of_week='thursday', hour=22, minute=5),  # Каждую неделю в понедельник в 10:00
-    },
+# Настройки кэша
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
 }

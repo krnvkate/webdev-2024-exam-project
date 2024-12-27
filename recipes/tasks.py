@@ -16,22 +16,36 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def delete_unpopular_recipes():
+    # try:
+    #     # Получаем дату, соответствующую "более года назад"
+    #     one_year_ago = timezone.now() - timedelta(days=365)
+    #
+    #     # Находим и удаляем рецепты
+    #     recipes = Recipe.objects.filter(rating__lt=2, publish__lt=one_year_ago)
+    #     count = recipes.count()
+    #     for recipe in recipes:
+    #         recipe.status = 'DT'  # Устанавливаем новый статус - Удалён
+    #         recipe.save()  # Сохраняем изменения
+    #         logger.info(f"Статус обновлён для рецепта с id {recipe.id} и названием {recipe.title}")
+    #         # Проверяем, был ли статус обновлён
+    #         updated_recipe = Recipe.objects.get(id=recipe.id)
+    #         logger.info(f"Статус после сохранения: {updated_recipe.status}")
+    #
+    #     logger.info(f"Успешно удалено {count} непопулярных рецепта(ов)")
+    #     return f"Удалено {count} рецепта(ов)"
+    # except Exception as e:
+    #     logger.error(f"Ошибка при удалении непопулярных рецептов: {str(e)}")
+    #     raise
     try:
-        # Получаем дату, соответствующую "более года назад"
         one_year_ago = timezone.now() - timedelta(days=365)
-
-        # Находим и удаляем рецепты
         recipes = Recipe.objects.filter(rating__lt=2, publish__lt=one_year_ago)
-        for recipe in recipes:
-            recipe.status = Recipe.Status.DRAFT  # Устанавливаем новый статус - Удалён
-            recipe.save()  # Сохраняем изменения
-
-        logger.info(f"Успешно удалено непопулярных рецепта(ов)")
-        return f"Удалено рецепта(ов)"
+        count = recipes.count()
+        recipes.delete()  # Удаляем рецепты
+        logger.info(f"Удалено {count} непопулярных рецепта(ов)")
+        return f"Удалено {count} рецепта(ов)"
     except Exception as e:
         logger.error(f"Ошибка при удалении непопулярных рецептов: {str(e)}")
         raise
-
 
 @shared_task
 def notify_new_recipes():
