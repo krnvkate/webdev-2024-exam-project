@@ -49,6 +49,10 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'mailhog',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'recipesite.urls'
@@ -192,3 +197,18 @@ CACHES = {
         }
     }
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Стандартная аутентификация Django
+    'allauth.account.auth_backends.AuthenticationBackend',  # Поддержка allauth
+]
+
+SITE_ID = 1  # ID текущего сайта, используемого в Django Sites Framework
+
+# Перенаправления после логина/логаута
+LOGIN_REDIRECT_URL = '/api/'  # Куда перенаправлять после успешного входа
+LOGOUT_REDIRECT_URL = '/api/'  # Куда перенаправлять после выхода
+
+# Отключение обязательного подтверждения email
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = True
