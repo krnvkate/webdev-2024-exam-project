@@ -31,6 +31,12 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
 
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset()\
+                .filter(status=Recipe.Status.PUBLISHED)
+
+
 class Recipe(models.Model):
     """Модель для описания рецепта"""
     class Status(models.TextChoices):
@@ -65,6 +71,9 @@ class Recipe(models.Model):
     #     if self.status == self.Status.PUBLISHED and self.publish is None:
     #         self.publish = timezone.now()
     #     super().save(*args, **kwargs)  # Вызов метода save родительского класса
+
+    objects = models.Manager()  # менеджер, применяемый по умолчанию
+    published = PublishedManager()  # конкретно-прикладной менеджер
 
     def __str__(self):
         return self.title
@@ -107,7 +116,7 @@ class RecIng(models.Model):
 class Step(models.Model):
     """Модель для описания шагов в рецепте"""
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-                               related_name='steps',verbose_name="Рецепт")
+                               related_name='steps', verbose_name="Рецепт")
     step_number = models.PositiveIntegerField(verbose_name="Номер шага")
     description = models.TextField(verbose_name="Описание шага")
     photo = models.ImageField(upload_to='recipes/steps/', blank=True, null=True,
