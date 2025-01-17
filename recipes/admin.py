@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from import_export.admin import ImportExportActionModelAdmin
 
 from recipes.export import RecipeResource
@@ -29,12 +30,29 @@ class StepInline(admin.TabularInline):
 class RecipeAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     """Админка для модели Рецепт"""
     inlines = [RecIngInline, StepInline]  # Отображение ингредиентов и шагов внутри формы рецепта.
-    list_display = ('title', 'category', 'author', 'rating', 'status') #Поля для отображения
-    list_filter = ('status', 'category',)  # Фильтрация по статусу и категории
+    list_display = ('title', 'category', 'author', 'rating_colored', 'status') #Поля для отображения
+    list_filter = ('status', 'category', 'rating')  # Фильтрация по статусу и категории, рейтингу
     date_hierarchy = 'publish'
     search_fields = ('title', 'author__username')  # Поиск по заголовку и автору
     raw_id_fields = ('author',)
+    list_display_links = ('title', 'author')
     resource_class = RecipeResource
+    actions = ['mark_as_published']
+
+    @admin.display(description='Рейтинг', ordering='rating')
+    def rating_colored(self, obj):
+        if obj.rating >= 4.5:
+            color = 'green'
+        elif obj.rating >= 3.0:
+            color = 'orange'
+        else:
+            color = 'red'
+        return format_html('<span style="color: {};">{}</span>', color, obj.rating)
+
+    def mark_as_published(self, request, queryset):
+        queryset.update(status=Recipe.Status.PUBLISHED)
+
+    mark_as_published.short_description = "Отметить как опубликованные"
 
 
 @admin.register(Category)
