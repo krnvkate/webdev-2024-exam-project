@@ -22,6 +22,8 @@ class Profile(models.Model):
     country = models.CharField(max_length=50, null=True, blank=True, verbose_name="Страна")
     city = models.CharField(max_length=50, null=True, blank=True, verbose_name="Город")
     info = models.TextField(null=True, blank=True, verbose_name="О себе")
+    social_networks = models.URLField(null=True, blank=True, verbose_name="Ссылки на социальные сети")
+    file_reward = models.FileField(upload_to='files_of_awards', null=True, blank=True, verbose_name="Награды, дипломы")
     history = HistoricalRecords()
 
     def __str__(self):

@@ -4,6 +4,7 @@ from import_export.admin import ImportExportActionModelAdmin
 
 from recipes.export import RecipeResource
 from .models import Category, Ingredient, Recipe, RecIng, Step
+from .generate_pdf import generate_recipe_pdf
 
 
 class RecIngInline(admin.TabularInline):
@@ -37,7 +38,14 @@ class RecipeAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     raw_id_fields = ('author',)
     list_display_links = ('title', 'author')
     resource_class = RecipeResource
-    actions = ['mark_as_published']
+    actions = ['mark_as_published', 'export_as_pdf']
+
+    def export_as_pdf(self, request, queryset):
+        if len(queryset) == 1:
+            return generate_recipe_pdf(queryset.first())
+        self.message_user(request, "Пожалуйста, выберите только один рецепт для экспорта в PDF")
+
+    export_as_pdf.short_description = "Экспортировать в PDF"
 
     @admin.display(description='Рейтинг', ordering='rating')
     def rating_colored(self, obj):
