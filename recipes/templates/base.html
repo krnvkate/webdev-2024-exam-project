@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Кулинарные рецепты{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Подключение своих стилей -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Блок для дополнительных стилей на конкретных страницах -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <!-- Логотип -->
+            <a class="navbar-brand" href="{% url 'recipes:cookbook' %}">
+                <img src="{% static 'images/logo.png' %}" alt="Логотип" height="40">
+                CookBook
+            </a>
+
+            <!-- Кнопка-бургер для мобильного меню -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Основное меню -->
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'recipes:cookbook' %}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Категории</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Новые рецепты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Популярное</a>
+                    </li>
+                </ul>
+
+                <!-- Форма поиска в шапке -->
+                <form class="d-flex" method="GET" action="{% url 'recipes:cookbook' %}">
+                    <input class="form-control me-2" type="search" name="search"
+                           placeholder="Поиск рецептов..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Поиск</button>
+                </form>
+
+                <!-- Блок авторизации -->
+                <div class="ms-3">
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Мои рецепты</a></li>
+                                <li><a class="dropdown-item" href="#">Избранное</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Выход</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="#" class="btn btn-outline-primary">Войти</a>
+                        <a href="#" class="btn btn-primary">Регистрация</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="container-fluid px-0" style="margin-top: 76px;">
+        <!-- Блок для сообщений -->
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Блок основного контента -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Футер -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <!-- Информация о сайте -->
+                <div class="col-md-4">
+                    <h5>О проекте</h5>
+                    <p>Собрание лучших кулинарных рецептов со всего мира</p>
+                </div>
+
+                <!-- Быстрые ссылки -->
+                <div class="col-md-4">
+                    <h5>Навигация</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">О нас</a></li>
+                        <li><a href="#" class="text-light">Контакты</a></li>
+                        <li><a href="#" class="text-light">Условия использования</a></li>
+                    </ul>
+                </div>
+
+                <!-- Социальные сети -->
+                <div class="col-md-4">
+                    <h5>Мы в соцсетях</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-2"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-2"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Копирайт -->
+            <div class="row mt-3">
+                <div class="col text-center">
+                    <small>&copy; {% now "Y" %} CookBook. Все права защищены.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Блок для дополнительных скриптов -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
