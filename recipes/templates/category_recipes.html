@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ category.category_name }}</h2>
+
+    <div class="row">
+        {% for recipe in recipes %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if recipe.main_photo %}
+                        <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ recipe.title }}</h5>
+                        <p class="card-text">{{ recipe.notes|truncatewords:20 }}</p>
+                        <div class="recipe-meta">
+                            <span class="rating">⭐ {{ recipe.rating|floatformat:1 }}</span>
+                            <span class="cook-time">⏰ {{ recipe.cook_time }}</span>
+                        </div>
+                        <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-primary mt-2">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col">
+                <p>В этой категории пока нет рецептов.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if recipes.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if recipes.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ recipes.previous_page_number }}">Предыдущая</a>
+                    </li>
+                {% endif %}
+
+                {% for num in recipes.paginator.page_range %}
+                    <li class="page-item {% if recipes.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if recipes.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ recipes.next_page_number }}">Следующая</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

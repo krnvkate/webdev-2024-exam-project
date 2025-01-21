@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Результаты поиска{% if query %} для "{{ query }}"{% endif %}</h2>
+    
+    {% if page_obj %}
+        <div class="row">
+            {% for recipe in page_obj %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if recipe.main_photo %}
+                            <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe.title }}</h5>
+                            <p class="card-text">{{ recipe.notes|truncatewords:20 }}</p>
+                            <div class="recipe-meta">
+                                <span class="rating">⭐ {{ recipe.rating|floatformat:1 }}</span>
+                                <span class="cook-time">⏰ {{ recipe.cook_time }}</span>
+                            </div>
+                            <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-primary mt-2">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?query={{ query }}&page={{ page_obj.previous_page_number }}">
+                                Предыдущая
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?query={{ query }}&page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?query={{ query }}&page={{ page_obj.next_page_number }}">
+                                Следующая
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            {% if query %}
+                По вашему запросу ничего не найдено.
+            {% else %}
+                Введите поисковый запрос.
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

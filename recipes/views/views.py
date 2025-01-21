@@ -2,14 +2,19 @@ from django.shortcuts import render
 from django.db.models import Count, Avg, Q
 from recipes.models import Recipe, Category, Ingredient
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from recipes.models import Recipe
+from .forms import RecipeForm
 
 
 def cookbook(request):
     # Получаем популярные рецепты (топ по рейтингу)
-    popular_recipes = Recipe.published.order_by('-rating')[:5]
+    popular_recipes = Recipe.published.filter(rating__gte=4.0).order_by('-rating')[:5]
 
     # Получаем новые рецепты
-    new_recipes = Recipe.published.order_by('-publish')[:6]
+    new_recipes = Recipe.published.order_by('-publish')[:3]
 
     # Получаем категории с подсчетом рецептов
     categories = Category.objects.annotate(
@@ -33,7 +38,14 @@ def cookbook(request):
         # Пагинация результатов поиска
         paginator = Paginator(search_results, 6)
         page_number = request.GET.get('page', 1)
-        search_results = paginator.get_page(page_number)
+        try:
+            search_results = paginator.page(page_number)
+        except PageNotAnInteger:
+            # Если page_number не целое число, то выдать первую страницу
+            search_results = paginator.page(1)
+        except EmptyPage:
+            # Если page_number находится вне диапазона, то выдать последнюю страницу результатов
+            search_results = paginator.page(paginator.num_pages)
     else:
         search_results = None
 
@@ -44,10 +56,10 @@ def cookbook(request):
     else:
         filtered_recipes = None
 
-    # Получение быстрых рецептов (менее 30 минут)
+    # Получение быстрых рецептов (менее 30 минут) с куриными яйцами
     quick_recipes = Recipe.published.filter(
         cook_time__lte='00:30:00'
-    ).order_by('cook_time')[:4]
+    ).filter(ingredients__name='яйцо').order_by('cook_time')[:4]
 
     context = {
         'popular_recipes': popular_recipes,
@@ -80,9 +92,67 @@ def search_recipes(request):
     })
 
 
-def recipe_detail(request,):
-    recipe = get_object_or_404(Recipe, status=Recipe.Status.PUBLISHED)
-    return render(request,
-                  'recipe_detail.html',
-                  {'recipe': recipe})
+def recipe_detail(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    return render(request, 'recipe_detail.html', {'recipe': recipe})
+
+
+@login_required
+def recipe_edit(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id, author=request.user)
+    if request.method == "POST":
+        form = RecipeForm(request.POST, request.FILES, instance=recipe)
+        if form.is_valid():
+            recipe = form.save()
+            messages.success(request, 'Рецепт успешно обновлен')
+            return redirect('recipes:recipe_detail', recipe_id=recipe.id)
+    else:
+        form = RecipeForm(instance=recipe)
+    return render(request, 'recipe_form.html', {'form': form})
+
+
+@login_required
+def recipe_delete(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id, author=request.user)
+    if request.method == "POST":
+        recipe.delete()
+        messages.success(request, 'Рецепт успешно удален')
+        return redirect('recipes:cookbook')
+    return redirect('recipes:recipe_detail', recipe_id=recipe_id)
+
+
+@login_required
+def recipe_new(request):
+    if request.method == "POST":
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.author = request.user
+            recipe.save()
+            messages.success(request, 'Рецепт успешно создан')
+            return redirect('recipes:recipe_detail', recipe_id=recipe.id)
+    else:
+        form = RecipeForm()
+    return render(request, 'recipe_form.html', {'form': form})
+
+
+def category_recipes(request, id):
+    category = get_object_or_404(Category, id=id)
+    recipes = Recipe.published.filter(category=category)
+
+    # Пагинация
+    paginator = Paginator(recipes, 9)
+    page_number = request.GET.get('page')
+    try:
+        recipes = paginator.page(page_number)
+    except PageNotAnInteger:
+        recipes = paginator.page(1)
+    except EmptyPage:
+        recipes = paginator.page(paginator.num_pages)
+
+    return render(request, 'category_recipes.html', {
+        'category': category,
+        'recipes': recipes
+    })
+
 

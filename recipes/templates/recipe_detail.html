@@ -1,8 +1,110 @@
 {% extends "base.html" %}
-{% block title %}{{ .title }}{% endblock %}
+{% load static %}
+
 {% block content %}
- <h1>{{ recipe.title }}</h1>
- <p class="date">
- Published {{ recipe.publish }} by {{ recipe.author }}
- </p>
+<div class="container mt-4">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'recipes:cookbook' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="#">{{ recipe.category.category_name }}</a></li>
+            <li class="breadcrumb-item active">{{ recipe.title }}</li>
+        </ol>
+    </nav>
+
+    <!-- Основная информация о рецепте -->
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-3">{{ recipe.title }}</h1>
+            {% if recipe.main_photo %}
+                <img src="{{ recipe.main_photo.url }}" class="img-fluid rounded mb-4" alt="{{ recipe.title }}">
+            {% endif %}
+
+            <!-- Мета-информация -->
+            <div class="recipe-meta bg-light p-3 rounded mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <i class="fas fa-clock"></i> {{ recipe.cook_time }}
+                    </div>
+                    <div class="col-md-3">
+                        <i class="fas fa-user-friends"></i> {{ recipe.servings }} порций
+                    </div>
+                    <div class="col-md-3">
+                        <i class="fas fa-fire"></i> {{ recipe.calories }} ккал
+                    </div>
+                    <div class="col-md-3">
+                        <i class="fas fa-star"></i> {{ recipe.rating }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ингредиенты -->
+            <h3>Ингредиенты</h3>
+            <ul class="list-group mb-4">
+                {% for rec_ing in recipe.recing_set.all %}
+                    <li class="list-group-item">
+                        {{ rec_ing.ingredient.name }} - {{ rec_ing.quantity }} {{ rec_ing.get_unit_display }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <!-- Шаги приготовления -->
+            <h3>Приготовление</h3>
+            {% for step in recipe.steps.all %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Шаг {{ step.step_number }}</h5>
+                        <p class="card-text">{{ step.description }}</p>
+                        {% if step.photo %}
+                            <img src="{{ step.photo.url }}" class="img-fluid rounded" alt="Шаг {{ step.step_number }}">
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Боковая панель -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Об авторе</h5>
+                    <p class="card-text">{{ recipe.author.username }}</p>
+                    <p class="card-text"><small class="text-muted">Опубликовано: {{ recipe.publish|date:"d.m.Y" }}</small></p>
+                </div>
+            </div>
+
+            {% if user.is_authenticated and user == recipe.author %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'recipes:recipe_edit' recipe.id %}" class="btn btn-primary">Редактировать</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        Удалить рецепт
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтверждение удаления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить рецепт "{{ recipe.title }}"?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form action="{% url 'recipes:recipe_delete' recipe.id %}" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
