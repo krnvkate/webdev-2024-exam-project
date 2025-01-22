@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load recipe_extras %}
 
 {% block content %}
 <!-- Секция поиска -->
@@ -7,10 +8,10 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <form method="GET" action="{% url 'recipes:cookbook' %}" class="search-form">
+                <form method="GET" action="{% url 'recipes:search' %}" class="search-form">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control"
-                               placeholder="Поиск рецептов..." value="{{ search_query }}">
+                        <input type="text" name="query" class="form-control"
+                               placeholder="Поиск рецептов по названию и ингредиентам..." value="{{ request.GET.query }}">
                         <button class="btn btn-primary" type="submit">Найти</button>
                     </div>
                 </form>
@@ -20,26 +21,31 @@
 </section>
 
 <!-- Популярные рецепты -->
-<section class="popular-recipes py-5">
+<section class="popular-recipes py-5" id="popular">
     <div class="container">
-        <h2 class="section-title mb-4">Популярные рецепты</h2>
+        <h2 class="section-title mb-4">Лучшие рецепты месяца</h2>
         <div class="row">
             {% for recipe in popular_recipes %}
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
-                    {% if recipe.main_photo %}
-                    <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
-                    {% endif %}
+                    <div class="card-img-wrapper">
+                        {% if recipe.main_photo %}
+                        <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                        {% endif %}
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title"><a href="{{ recipe.get_absolute_url }}">{{ recipe.title }}</a></h5>
+                        <h5 class="card-title">
+                            <a href="{{ recipe.get_absolute_url }}">{{ recipe.title }}</a>
+                        </h5>
                         <div class="recipe-meta">
                             <span class="rating">⭐ {{ recipe.rating|floatformat:"1g" }}</span>
-                            <span class="cook-time">⏰ {{ recipe.cook_time }}</span>
+                            <span class="cook-time">⏰ {{ recipe.cook_time|format_duration }}</span>
                         </div>
-                        <p class="card-text">{{ recipe.notes|truncatewords:20 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-2">
                             <small class="text-muted">Автор: {{ recipe.author }}</small>
-                            <a href="#" class="btn btn-outline-primary btn-sm">Подробнее</a>
+                            <button class="btn btn-outline-danger btn-sm favorite-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -50,19 +56,18 @@
 </section>
 
 <!-- Категории -->
-<section class="categories py-5 bg-light">
+<section class="categories py-5 bg-light" id="categories">
     <div class="container">
         <h2 class="section-title mb-4">Категории</h2>
         <div class="row">
             {% for category in categories %}
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="category-card text-center">
-                    <h3 class="category-title">{{ category.category_name }}</h3>
-                    <p class="recipe-count">{{ category.recipe_count }} рецептов</p>
-                    <a href="?category={{ category.id }}" class="btn btn-outline-secondary btn-sm">
-                        Смотреть рецепты
-                    </a>
-                </div>
+            <div class="col-md-2 col-sm-4 mb-4">
+                <a href="{% url 'recipes:category_recipes' category.id %}" class="text-decoration-none">
+                    <div class="category-card text-center">
+                        <h4 class="category-title">{{ category.category_name }}</h4>
+                        <p class="recipe-count">{{ category.recipe_count|plural_recipes }}</p>
+                    </div>
+                </a>
             </div>
             {% endfor %}
         </div>
@@ -70,28 +75,34 @@
 </section>
 
 <!-- Новые рецепты -->
-<section class="new-recipes py-5">
+<section class="new-recipes py-5" id="new">
     <div class="container">
         <h2 class="section-title mb-4">Новые рецепты</h2>
         <div class="row">
             {% for recipe in new_recipes %}
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
-                    {% if recipe.main_photo %}
-                    <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
-                    {% endif %}
+                    <div class="card-img-wrapper">
+                        {% if recipe.main_photo %}
+                        <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                        {% endif %}
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ recipe.title }}</h5>
+                        <h5 class="card-title"><a href="{{ recipe.get_absolute_url }}">{{ recipe.title }}</a></h5>
                         <p class="card-text">
                             <small class="text-muted">
                                 Опубликовано: {{ recipe.publish|date:"d.m.Y" }}
                             </small>
                         </p>
-                        <div class="recipe-meta">
-                            <span class="calories">🔥 {{ recipe.calories }} ккал</span>
-                            <span class="servings">👥 {{ recipe.servings }} порций</span>
+                        <div class="recipe-meta d-flex justify-content-between align-items-center mt-2">
+                            <div>
+                                <span class="calories">🔥 {{ recipe.calories }} ккал</span>
+                                <span class="servings">👥 {{ recipe.servings }} порций</span>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm favorite-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
-                        <a href="#" class="btn btn-outline-primary btn-sm mt-2">Подробнее</a>
                     </div>
                 </div>
             </div>
@@ -100,57 +111,7 @@
     </div>
 </section>
 
-<!-- Результаты поиска -->
-{% if search_results %}
-<section class="search-results py-5 bg-light">
-    <div class="container">
-        <h2 class="section-title mb-4">Результаты поиска</h2>
-        <div class="row">
-            {% for recipe in search_results %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    {% if recipe.main_photo %}
-                    <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ recipe.title }}</h5>
-                        <a href="#" class="btn btn-outline-primary btn-sm">Подробнее</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <!-- Пагинация -->
-        {% if search_results.has_other_pages %}
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                {% if search_results.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?search={{ search_query }}&page={{ search_results.previous_page_number }}">
-                        Назад
-                    </a>
-                </li>
-                {% endif %}
 
-                {% for num in search_results.paginator.page_range %}
-                <li class="page-item {% if search_results.number == num %}active{% endif %}">
-                    <a class="page-link" href="?search={{ search_query }}&page={{ num }}">{{ num }}</a>
-                </li>
-                {% endfor %}
-
-                {% if search_results.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?search={{ search_query }}&page={{ search_results.next_page_number }}">
-                        Вперед
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-    </div>
-</section>
-{% endif %}
 
 <!-- Статистика -->
 <section class="stats py-4 bg-primary text-white">

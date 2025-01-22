@@ -1,0 +1,110 @@
+html, body {
+    height: 100%; /* Устанавливаем высоту 100% для html и body */
+    margin: 0; /* Убираем отступы */
+}
+
+main {
+    min-height: calc(60vh); /* Учитываем высоту футера */
+}
+
+footer {
+    position: relative;
+    bottom: 0; /* Закрепляем футер */
+    width: 100%; /* Ширина на 100% */
+}
+
+.card-img-wrapper {
+    position: relative;
+    padding-top: 75%; /* Соотношение сторон 4:3 */
+    overflow: hidden;
+}
+
+.card-img-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.favorite-btn {
+    border: none;
+    background: none;
+    padding: 5px 10px;
+    transition: transform 0.2s;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.favorite-btn.active i {
+    color: #dc3545;
+    font-weight: 900;
+}
+.category-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: block;
+    text-decoration: none;
+    color: #333;
+    height: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #f8f9fa;
+}
+
+.category-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.recipe-count {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+/* Стили для формы рецепта */
+.container.mt-4 form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+    border: none;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    padding: 15px 20px;
+}
+
+.card-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.card-body {
+    padding: 25px;
+}
+/* Стили для полей ввода */
+.form-control, .select2-container--default .select2-selection--single {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}

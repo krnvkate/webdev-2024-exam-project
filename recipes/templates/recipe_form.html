@@ -2,48 +2,102 @@
 {% load static %}
 
 {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2>{% if is_new %}Новый рецепт{% else %}Редактирование рецепта{% endif %}</h2>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        {% for field in form %}
-                        <div class="mb-3">
-                            {% if field.errors %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.media }}
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Основная информация</h3>
+            </div>
+            <div class="card-body">
+                {% for field in form %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
                             <div class="alert alert-danger">
                                 {{ field.errors }}
                             </div>
-                            {% endif %}
-                            
-                            {{ field.label_tag }}
-                            {{ field }}
-                            
-                            {% if field.help_text %}
-                            <small class="form-text text-muted">{{ field.help_text }}</small>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                {% if is_new %}Создать рецепт{% else %}Сохранить изменения{% endif %}
-                            </button>
-                            <a href="{% url 'recipes:cookbook' %}" class="btn btn-secondary">Отмена</a>
-                        </div>
-                    </form>
-                </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
             </div>
         </div>
-    </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Ингредиенты</h3>
+            </div>
+            <div class="card-body">
+                {{ ingredient_formset.management_form }}
+                <div id="ingredient-forms">
+                    {% for form in ingredient_formset %}
+                        <div class="ingredient-form mb-3">
+                            {{ form }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-secondary" id="add-ingredient">
+                    Добавить ингредиент
+                </button>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Шаги приготовления</h3>
+            </div>
+            <div class="card-body">
+                {{ step_formset.management_form }}
+                <div id="step-forms">
+                    {% for form in step_formset %}
+                        <div class="step-form mb-3">
+                            {{ form }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-secondary" id="add-step">
+                    Добавить шаг
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить рецепт</button>
+    </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-{{ form.media }}
+<script>
+    $(document).ready(function() {
+        // Функционал для добавления новых форм ингредиентов
+        $('#add-ingredient').click(function() {
+            var form_idx = $('#id_ingredients-TOTAL_FORMS').val();
+            var new_form = $('#ingredient-forms .ingredient-form:first').clone(true);
+            new_form.find(':input').val('').attr('name', function(index, name) {
+                return name.replace('-0-', '-' + form_idx + '-');
+            });
+            $('#ingredient-forms').append(new_form);
+            $('#id_ingredients-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+        });
+
+        // Функционал для добавления новых форм шагов
+        $('#add-step').click(function() {
+            var form_idx = $('#id_steps-TOTAL_FORMS').val();
+            var new_form = $('#step-forms .step-form:first').clone(true);
+            new_form.find(':input').val('').attr('name', function(index, name) {
+                return name.replace('-0-', '-' + form_idx + '-');
+            });
+            $('#step-forms').append(new_form);
+            $('#id_steps-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+        });
+    });
+</script>
 {% endblock %}

@@ -23,7 +23,7 @@
         <div class="container">
             <!-- Логотип -->
             <a class="navbar-brand" href="{% url 'recipes:cookbook' %}">
-                <img src="{% static 'cooking-book.png' %}" alt="Логотип" height="40">
+                <img src="{% static 'cooking.png' %}" alt="Логотип" height="40">
                 CookBook
             </a>
 
@@ -39,22 +39,15 @@
                         <a class="nav-link" href="{% url 'recipes:cookbook' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Категории</a>
+                        <a class="nav-link" href="#popular">Популярное</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Новые рецепты</a>
+                        <a class="nav-link" href="#categories">Категории</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Популярное</a>
+                        <a class="nav-link" href="#new">Новые рецепты</a>
                     </li>
                 </ul>
-
-                <!-- Форма поиска в шапке -->
-                <form class="d-flex" method="GET" action="{% url 'recipes:cookbook' %}">
-                    <input class="form-control me-2" type="search" name="search"
-                           placeholder="Поиск рецептов..." aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Поиск</button>
-                </form>
 
                 <!-- Блок авторизации -->
                 <div class="ms-3">
@@ -66,6 +59,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#">Мои рецепты</a></li>
+                                <li><a class="dropdown-item" href="{% url 'recipes:recipe_new' %}">Создать рецепт</a></li>
                                 <li><a class="dropdown-item" href="#">Избранное</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#">Выход</a></li>
@@ -108,7 +102,6 @@
                     <h5>О проекте</h5>
                     <p>Собрание лучших кулинарных рецептов со всего мира</p>
                 </div>
-
                 <!-- Быстрые ссылки -->
                 <div class="col-md-4">
                     <h5>Навигация</h5>
@@ -118,13 +111,12 @@
                         <li><a href="#" class="text-light">Условия использования</a></li>
                     </ul>
                 </div>
-
                 <!-- Социальные сети -->
                 <div class="col-md-4">
                     <h5>Мы в соцсетях</h5>
                     <div class="social-links">
-                        <a href="#" class="text-light me-2"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-light me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-2"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="text-light me-2"><i class="fab fa-vk"></i></a>
                         <a href="#" class="text-light me-2"><i class="fab fa-telegram"></i></a>
                     </div>
                 </div>

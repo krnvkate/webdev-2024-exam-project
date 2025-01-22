@@ -51,7 +51,7 @@ class FavoriteRecipe(models.Model):
                              verbose_name="Пользователь")
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='users_like',
                                verbose_name="Понравившийся рецепт")
-    fav_date = models.DateField(verbose_name="Дата выбора")
+    fav_date = models.DateField(auto_now_add=True, verbose_name="Дата выбора")
     history = HistoricalRecords()
 
     def __str__(self):

@@ -1,0 +1,45 @@
+html, body {
+    height: 100%; /* Устанавливаем высоту 100% для html и body */
+    margin: 0; /* Убираем отступы */
+}
+
+.main {
+    min-height: calc(100vh - 4rem); /* Учитываем высоту футера */
+}
+
+.footer {
+    position: relative;
+    bottom: 0; /* Закрепляем футер */
+    width: 100%; /* Ширина на 100% */
+}
+
+.card-img-wrapper {
+    position: relative;
+    padding-top: 75%; /* Соотношение сторон 4:3 */
+    overflow: hidden;
+}
+
+.card-img-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.favorite-btn {
+    border: none;
+    background: none;
+    padding: 5px 10px;
+    transition: transform 0.2s;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.favorite-btn.active i {
+    color: #dc3545;
+    font-weight: 900;
+}

@@ -20,7 +20,7 @@ urlpatterns = [
     path('recipes/category/<int:category>/',
          RecipeByCategoryView.as_view(), name='recipe-category'),
     path('cookbook/', views.cookbook, name='cookbook'),
-    path('search/', views.search_recipes, name='search'),
+    path('cookbook/search/', views.search_recipes, name='search'),
     path('cookbook/recipe/<int:recipe_id>/', views.recipe_detail, name='recipe_detail'),
     path('cookbook/recipe/<int:recipe_id>/edit/', views.recipe_edit, name='recipe_edit'),
     path('cookbook/recipe/<int:recipe_id>/delete/', views.recipe_delete, name='recipe_delete'),

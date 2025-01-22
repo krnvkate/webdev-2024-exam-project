@@ -40,32 +40,18 @@ def delete_unpopular_recipes():
 
 @shared_task
 def notify_new_recipes():
-    # Получаем дату, соответствующую неделе назад
-    one_week_ago = timezone.now() - timedelta(days=7)
-
-    # Находим новые рецепты, добавленные за последнюю неделю
-    new_recipes = Recipe.objects.filter(publish__gte=one_week_ago)
-
-    # Проверяем, есть ли новые рецепты
-    if not new_recipes.exists():
+    one_week_ago = timezone.now() - timedelta(days=7)    # Получаем дату, соответствующую неделе назад
+    new_recipes = Recipe.objects.filter(publish__gte=one_week_ago)  # Рецепты, добавленные за последнюю неделю
+    if not new_recipes.exists():                # Проверяем, есть ли новые рецепты
         logger.info("Нет новых рецептов за последнюю неделю.")
         return "Нет новых рецептов."
-
-    # Получаем всех пользователей
-    users = User.objects.all()
-
-    # Формируем и отправляем письма каждому пользователю
-    for user in users:
+    users = User.objects.all()   # Получаем всех пользователей
+    for user in users:              # Формируем и отправляем письма каждому пользователю
         subject = "Уведомление о новых рецептах"
         message = "Здравствуйте!\n\nВот новые рецепты, которые были добавлены за последнюю неделю:\n"
-
-        # Добавляем все новые рецепты в сообщение
-        for recipe in new_recipes:
+        for recipe in new_recipes:           # Добавляем все новые рецепты в сообщение
             message += f"- {recipe.title}\n"
-
         message += "\nС уважением,\nКоманда рецептов."
-
-        # Отправка письма
         send_mail(
             subject,
             message,
@@ -73,8 +59,6 @@ def notify_new_recipes():
             [user.email],  # Адрес получателя
             fail_silently=False,
         )
-
         logger.info(f"Письмо отправлено на {user.email}")
-
     return f"Уведомления отправлены для {len(users)} пользователей."
 

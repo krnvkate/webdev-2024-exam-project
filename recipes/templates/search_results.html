@@ -1,24 +1,33 @@
 {% extends "base.html" %}
 {% load static %}
+{% load recipe_extras %}
 
 {% block content %}
 <div class="container mt-4">
     <h2>Результаты поиска{% if query %} для "{{ query }}"{% endif %}</h2>
+
+    {% if search_criteria %}
+    <div class="alert alert-info">
+        Найдено по: {{ search_criteria|join:" и " }}
+    </div>
+    {% endif %}
     
     {% if page_obj %}
         <div class="row">
             {% for recipe in page_obj %}
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
-                        {% if recipe.main_photo %}
-                            <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
-                        {% endif %}
+                        <div class="card-img-wrapper">
+                            {% if recipe.main_photo %}
+                                <img src="{{ recipe.main_photo.url }}" class="card-img-top" alt="{{ recipe.title }}">
+                            {% endif %}
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title">{{ recipe.title }}</h5>
                             <p class="card-text">{{ recipe.notes|truncatewords:20 }}</p>
                             <div class="recipe-meta">
                                 <span class="rating">⭐ {{ recipe.rating|floatformat:1 }}</span>
-                                <span class="cook-time">⏰ {{ recipe.cook_time }}</span>
+                                <span class="cook-time">⏰ {{ recipe.cook_time|format_duration }}</span>
                             </div>
                             <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-primary mt-2">Подробнее</a>
                         </div>
